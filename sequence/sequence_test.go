@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -32,4 +33,16 @@ func TestSequence(t *testing.T) {
 			t.Errorf("Sequence\nexpect: %v\ngot: %v", want, got)
 		}
 	})
+}
+
+func BenchmarkSequence(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Sequence("abc", 1)
+	}
+}
+
+func ExampleSequence() {
+	sequence := Sequence("abc", 3)
+	fmt.Println(sequence)
+	// Output: abcabcabc
 }
