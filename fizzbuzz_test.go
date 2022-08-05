@@ -1,39 +1,47 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestFizzBuzz_3(t *testing.T) {
-	got := fizzbuzz(3)
-	want := "Fizz"
-
-	if got != want {
-		t.Errorf("fizzbuzz(3)\ngot: %v\nwant: %v", got, want)
+func TestFizzBuzz(t *testing.T) {
+	verifyFizzBuzzReturns := func(t *testing.T, result, waited string, value int) {
+		t.Helper()
+		if result != waited {
+			t.Errorf("fizzbuzz(%d)\ngot: %v\nwant: %v", value, result, waited)
+		}
 	}
-}
 
-func TestFizzBuzz_5(t *testing.T) {
-	got := fizzbuzz(5)
-	want := "Buzz"
+	t.Run("this test should return Fizz", func(t *testing.T) {
+		value := 3
+		got := fizzbuzz(value)
+		want := "Fizz"
 
-	if got != want {
-		t.Errorf("fizzbuzz(buzz)\ngot: %v\nwant: %v", got, want)
-	}
-}
+		verifyFizzBuzzReturns(t, got, want, value)
+	})
 
-func TestFizzBuzz_15(t *testing.T) {
-	got := fizzbuzz(15)
-	want := "FizzBuzz"
+	t.Run("this Test should return Buzz", func(t *testing.T) {
+		value := 5
+		got := fizzbuzz(value)
+		want := "Buzz"
 
-	if got != want {
-		t.Errorf("fizzbuzz(fizzbuzz)\ngot: %v\nwant: %v", got, want)
-	}
-}
+		verifyFizzBuzzReturns(t, got, want, value)
+	})
 
-func TestFizzBuzz_4(t *testing.T) {
-	got := fizzbuzz(4)
-	want := "4"
+	t.Run("this test should return FizzBuzz", func(t *testing.T) {
+		value := 15
+		got := fizzbuzz(value)
+		want := "FizzBuzz"
 
-	if got != want {
-		t.Errorf("fizzbuzz(4)\ngot: %v\nwant: %v", got, want)
-	}
+		verifyFizzBuzzReturns(t, got, want, value)
+	})
+
+	t.Run("this test should return 4", func(t *testing.T) {
+		value := 4
+		got := fizzbuzz(value)
+		want := "4"
+
+		verifyFizzBuzzReturns(t, got, want, value)
+	})
+
 }
