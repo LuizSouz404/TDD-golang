@@ -13,14 +13,18 @@ func Greeting(name string, language string) string {
 		name = "mundo"
 	}
 
-	prefixGreeting := prefixGreetingInPortuguese
+	return prefixLanguage(language) + name
+}
 
+func prefixLanguage(language string) (prefix string) {
 	switch language {
 	case english:
-		prefixGreeting = prefixGreetingInEnglish
+		prefix = prefixGreetingInEnglish
 	case french:
-		prefixGreeting = prefixGreetingInFrench
+		prefix = prefixGreetingInFrench
+	default:
+		prefix = prefixGreetingInPortuguese
 	}
 
-	return prefixGreeting + name
+	return
 }
