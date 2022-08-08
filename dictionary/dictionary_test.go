@@ -3,13 +3,21 @@ package main
 import "testing"
 
 func TestDictionary(t *testing.T) {
-	t.Run("This should search for a definition", func(t *testing.T) {
-		dictionary := map[string]string{"test": "Test is just a test"}
+	dictionary := Dictionary{"test": "Test is just a test"}
 
-		got := Search(dictionary, "test")
+	t.Run("This should search for a definition", func(t *testing.T) {
+		got, _ := dictionary.Search("test")
 		want := "Test is just a test"
 
 		compareStrings(t, got, want)
+	})
+
+	t.Run("This should search but return an error", func(t *testing.T) {
+		_, got := dictionary.Search("unknow")
+
+		if got == nil {
+			t.Fatal("an error is expected to be obtained")
+		}
 	})
 }
 
