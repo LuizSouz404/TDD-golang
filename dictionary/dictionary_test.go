@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestDictionary(t *testing.T) {
+func TestDictionarySearch(t *testing.T) {
 	dictionary := Dictionary{"test": "Test is just a test"}
 
 	t.Run("This should search for a definition", func(t *testing.T) {
@@ -16,6 +16,18 @@ func TestDictionary(t *testing.T) {
 		_, got := dictionary.Search("unknow")
 
 		compareError(t, got, errorWordNotFound)
+	})
+}
+
+func TestDictionaryAdd(t *testing.T) {
+	t.Run("This should search for a definition", func(t *testing.T) {
+		dictionary := Dictionary{}
+		dictionary.Add("test", "Test is just a test")
+
+		got, _ := dictionary.Search("test")
+		want := "Test is just a test"
+
+		compareStrings(t, got, want)
 	})
 }
 
