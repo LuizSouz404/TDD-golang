@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func main() {}
 
@@ -26,6 +29,12 @@ func (w *Wallet) Extract() Bitcoin {
 	return w.Statement
 }
 
-func (w *Wallet) WithDraw(value Bitcoin) {
+func (w *Wallet) WithDraw(value Bitcoin) error {
+	if w.Statement < value {
+		return ErrorInsufficientBalance
+	}
 	w.Statement -= value
+	return nil
 }
+
+var ErrorInsufficientBalance = errors.New("you don't have enough balance")
