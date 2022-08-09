@@ -40,6 +40,18 @@ func TestDictionaryAdd(t *testing.T) {
 	})
 }
 
+func TestDictionaryUpdate(t *testing.T) {
+	t.Run("This should update a definition", func(t *testing.T) {
+		word := "test"
+		definition := "Test is just a test"
+		dictionary := Dictionary{word: definition}
+		newDefinition := "Update a test and a test is just a test"
+		dictionary.Update(word, newDefinition)
+
+		compareDefinition(t, dictionary, word, newDefinition)
+	})
+}
+
 func compareDefinition(t *testing.T, dictionary Dictionary, word, definition string) {
 	t.Helper()
 
