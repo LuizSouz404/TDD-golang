@@ -5,8 +5,9 @@ func main() {}
 type Dictionary map[string]string
 
 const (
-	ErrorWordNotFound = ErrDictionary("word not found")
-	ErrorWordExists   = ErrDictionary("word already exists")
+	ErrorWordNotFound  = ErrDictionary("word not found")
+	ErrorWordExists    = ErrDictionary("word already exists")
+	ErrorWordNotExists = ErrDictionary("word not exists")
 )
 
 type ErrDictionary string
@@ -36,6 +37,16 @@ func (d Dictionary) Add(word string, definition string) error {
 	return nil
 }
 
-func (d Dictionary) Update(word, newDefinition string) {
-	d[word] = newDefinition
+func (d Dictionary) Update(word, newDefinition string) error {
+	_, err := d.Search(word)
+	switch err {
+	case ErrorWordNotFound:
+		return ErrorWordNotExists
+	case nil:
+		d[word] = newDefinition
+	default:
+		return err
+	}
+
+	return nil
 }

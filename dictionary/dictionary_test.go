@@ -50,6 +50,15 @@ func TestDictionaryUpdate(t *testing.T) {
 
 		compareDefinition(t, dictionary, word, newDefinition)
 	})
+
+	t.Run("This should return a erro trying to update", func(t *testing.T) {
+		word := "test"
+		definition := "Test is just a test"
+		dictionary := Dictionary{}
+		err := dictionary.Update(word, definition)
+
+		compareError(t, err, ErrorWordNotExists)
+	})
 }
 
 func compareDefinition(t *testing.T, dictionary Dictionary, word, definition string) {
