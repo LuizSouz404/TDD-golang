@@ -60,6 +60,19 @@ func TestDictionaryUpdate(t *testing.T) {
 		compareError(t, err, ErrorWordNotExists)
 	})
 }
+func TestDictionaryDelete(t *testing.T) {
+	t.Run("This should delete a definition", func(t *testing.T) {
+		word := "test"
+		definition := "Test is just a test"
+		dictionary := Dictionary{word: definition}
+		dictionary.Delete(word)
+
+		_, err := dictionary.Search(word)
+		if err != ErrorWordNotFound {
+			t.Errorf("Dictionary\nexpect the word '%s' be deleted", word)
+		}
+	})
+}
 
 func compareDefinition(t *testing.T, dictionary Dictionary, word, definition string) {
 	t.Helper()
