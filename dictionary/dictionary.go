@@ -7,16 +7,22 @@ func main() {}
 type Dictionary map[string]string
 
 var (
-	errorWordNotFound = errors.New("word not found")
+	ErrorWordNotFound = errors.New("word not found")
+	ErrorWordExists   = errors.New("word already exists")
 )
 
 func (d Dictionary) Search(word string) (string, error) {
 	if d[word] == "" {
-		return "", errorWordNotFound
+		return "", ErrorWordNotFound
 	}
 	return d[word], nil
 }
 
-func (d Dictionary) Add(word string, definition string) {
+func (d Dictionary) Add(word string, definition string) error {
+	if d[word] == definition {
+		return ErrorWordExists
+	}
+
 	d[word] = definition
+	return nil
 }
