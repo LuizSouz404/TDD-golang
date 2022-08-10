@@ -10,7 +10,10 @@ func TestCount(t *testing.T) {
 	Count(&buffer)
 
 	got := buffer.String()
-	want := "3"
+	want := `3
+2
+1
+Vai!`
 
 	if got != want {
 		t.Errorf("Count\ngot: %s\nexpect: %s", got, want)
