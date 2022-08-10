@@ -19,6 +19,15 @@ type Sleeper interface {
 	Sleep()
 }
 
+type SleeperConfigure struct {
+	duration time.Duration
+	pause    func(time.Duration)
+}
+
+func (s *SleeperConfigure) Pause() {
+	s.pause(s.duration)
+}
+
 type SleeperDefault struct{}
 
 func (s *SleeperDefault) Sleep() {
