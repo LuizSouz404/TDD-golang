@@ -27,8 +27,9 @@ func (s *SleeperDefault) Sleep() {
 
 func Count(writer io.Writer, sleeper Sleeper) {
 	for i := countNumber; i > 0; i-- {
-		fmt.Fprintln(writer, i)
 		sleeper.Sleep()
+		fmt.Fprintln(writer, i)
 	}
+	sleeper.Sleep()
 	fmt.Fprint(writer, lastWord)
 }
