@@ -3,14 +3,11 @@ package main
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func mockCheckerWebsite(url string) bool {
-	if url == "waat://furhuterwe.geds" {
-		return false
-	}
-
-	return true
+	return url != "waat://furhuterwe.geds"
 }
 
 func TestVerifyWebsite(t *testing.T) {
@@ -30,5 +27,22 @@ func TestVerifyWebsite(t *testing.T) {
 
 	if !reflect.DeepEqual(want, got) {
 		t.Fatalf("Concurrency\ngot: %v\nwant: %v", got, want)
+	}
+}
+
+func slowStubCheckerWebsite(_ string) bool {
+	time.Sleep(20 * time.Millisecond)
+	return true
+}
+
+func BenchmarkCheckerWebsite(b *testing.B) {
+	urls := make([]string, 100)
+
+	for i := 0; i < len(urls); i++ {
+		urls[i] = "one url"
+	}
+
+	for i := 0; i < b.N; i++ {
+		VerifyWebsite(slowStubCheckerWebsite, urls)
 	}
 }
