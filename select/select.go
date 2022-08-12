@@ -8,17 +8,18 @@ import (
 func main() {}
 
 func Runner(urlOne, urlTwo string) string {
-	initA := time.Now()
-	http.Get(urlOne)
-	durationA := time.Since(initA)
-
-	initB := time.Now()
-	http.Get(urlTwo)
-	durationB := time.Since(initB)
+	durationA := mensureTimeResponse(urlOne)
+	durationB := mensureTimeResponse(urlTwo)
 
 	if durationA < durationB {
 		return urlOne
 	}
 
 	return urlTwo
+}
+
+func mensureTimeResponse(URL string) time.Duration {
+	init := time.Now()
+	http.Get(URL)
+	return time.Since(init)
 }
