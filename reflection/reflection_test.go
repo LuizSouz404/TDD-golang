@@ -85,11 +85,7 @@ func TestReflection(t *testing.T) {
 }
 
 func through(x interface{}, fn func(input string)) {
-	value := reflect.ValueOf(x)
-
-	if value.Kind() == reflect.Ptr {
-		value = value.Elem()
-	}
+	value := getValue(x)
 
 	for i := 0; i < value.NumField(); i++ {
 		field := value.Field(i)
@@ -101,4 +97,14 @@ func through(x interface{}, fn func(input string)) {
 			through(field.Interface(), fn)
 		}
 	}
+}
+
+func getValue(x interface{}) reflect.Value {
+	value := reflect.ValueOf(x)
+
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+
+	return value
 }
