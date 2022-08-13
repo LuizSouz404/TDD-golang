@@ -19,21 +19,22 @@ func TestSelect(t *testing.T) {
 		defer fastServer.Close()
 
 		want := fastURL
-		got, _ := Runner(slowURL, fastURL)
+		got, err := Runner(slowURL, fastURL)
 
+		if err != nil {
+			t.Fatalf("Was not expect an error but receive one %v", err)
+		}
 		if got != want {
 			t.Errorf("Runner\ngot: %s\nexpect: %s", got, want)
 		}
 	})
 
 	t.Run("return an erro if an server not response in 10s", func(t *testing.T) {
-		serverA := createServerWithDelay(11 * time.Second)
-		serverB := createServerWithDelay(12 * time.Second)
+		server := createServerWithDelay(25 * time.Millisecond)
 
-		defer serverA.Close()
-		defer serverB.Close()
+		defer server.Close()
 
-		_, err := Runner(serverA.URL, serverB.URL)
+		_, err := ConfigRunner(server.URL, server.URL, 20*time.Millisecond)
 
 		if err == nil {
 			t.Error("expect an error, but nothing was got")
