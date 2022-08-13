@@ -6,27 +6,48 @@ import (
 )
 
 func TestReflection(t *testing.T) {
-	t.Run("this test should have an value", func(t *testing.T) {
-		want := "Chris"
+	cases := []struct {
+		Nome         string
+		Input        interface{}
+		CallsWaiting []string
+	}{
+		{
+			"Struct com um campo string",
+			struct {
+				Nome string
+			}{"Chris"},
+			[]string{"Chris"},
+		},
+		{
+			"Struct com dois campos string",
+			struct {
+				Nome   string
+				Cidade string
+			}{"Chris", "Londres"},
+			[]string{"Chris", "Londres"},
+		},
+	}
 
-		var result []string
+	for _, test := range cases {
+		t.Run(test.Nome, func(t *testing.T) {
+			var result []string
 
-		x := struct {
-			Nome string
-		}{want}
+			through(test.Input, func(input string) {
+				result = append(result, input)
+			})
 
-		through(x, func(input string) {
-			result = append(result, input)
+			if !reflect.DeepEqual(result, test.CallsWaiting) {
+				t.Errorf("Reflection\ngot: %v\nexpect: %v", result, test.CallsWaiting)
+			}
 		})
+	}
 
-		if result[0] != want {
-			t.Errorf("Reflection\ngot: %s\nexpect: %s", result[0], want)
-		}
-	})
 }
 
 func through(x interface{}, fn func(input string)) {
 	value := reflect.ValueOf(x)
-	field := value.Field(0)
-	fn(field.String())
+	for i := 0; i < value.NumField(); i++ {
+		field := value.Field(i)
+		fn(field.String())
+	}
 }
