@@ -1,25 +1,32 @@
 package main
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestReflection(t *testing.T) {
-	want := "Chris"
+	t.Run("this test should have an value", func(t *testing.T) {
+		want := "Chris"
 
-	var result []string
+		var result []string
 
-	x := struct {
-		Nome string
-	}{want}
+		x := struct {
+			Nome string
+		}{want}
 
-	through(x, func(input string) {
-		result = append(result, input)
+		through(x, func(input string) {
+			result = append(result, input)
+		})
+
+		if result[0] != want {
+			t.Errorf("Reflection\ngot: %s\nexpect: %s", result[0], want)
+		}
 	})
-
-	if len(result) != 1 {
-		t.Errorf("Reflection\ngot: %d\nexpect: %d", len(result), 1)
-	}
 }
 
 func through(x interface{}, fn func(input string)) {
-	fn("I still not believe then Brazil lost for 7x1")
+	value := reflect.ValueOf(x)
+	field := value.Field(0)
+	fn(field.String())
 }
