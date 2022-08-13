@@ -78,11 +78,10 @@ func through(x interface{}, fn func(input string)) {
 	for i := 0; i < value.NumField(); i++ {
 		field := value.Field(i)
 
-		if field.Kind() == reflect.String {
+		switch field.Kind() {
+		case reflect.String:
 			fn(field.String())
-		}
-
-		if field.Kind() == reflect.Struct {
+		case reflect.Struct:
 			through(field.Interface(), fn)
 		}
 	}
