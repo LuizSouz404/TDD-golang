@@ -82,6 +82,14 @@ func TestReflection(t *testing.T) {
 			},
 			[]string{"Santos", "São Vicente"},
 		},
+		{
+			"Maps",
+			map[string]string{
+				"Foo": "Bar",
+				"Baz": "Boz",
+			},
+			[]string{"Bar", "Boz"},
+		},
 	}
 
 	for _, test := range cases {
@@ -103,22 +111,25 @@ func TestReflection(t *testing.T) {
 func through(x interface{}, fn func(input string)) {
 	value := getValue(x)
 
-	quantityOfValue := 0
-	var getField func(int) reflect.Value
+	throughValue := func(value reflect.Value) {
+		through(value.Interface(), fn)
+	}
 
 	switch value.Kind() {
 	case reflect.String:
 		fn(value.String())
 	case reflect.Struct:
-		quantityOfValue = value.NumField()
-		getField = value.Field
+		for i := 0; i < value.NumField(); i++ {
+			through(value.Interface(), fn)
+		}
 	case reflect.Slice, reflect.Array:
-		quantityOfValue = value.Len()
-		getField = value.Index
-	}
-
-	for i := 0; i < quantityOfValue; i++ {
-		through(getField(i).Interface(), fn)
+		for i := 0; i < value.Len(); i++ {
+			throughValue(value.Field(i))
+		}
+	case reflect.Map:
+		for _, key := range value.MapKeys() {
+			throughValue(value.MapIndex(key))
+		}
 	}
 
 }
