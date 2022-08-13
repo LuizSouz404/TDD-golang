@@ -74,6 +74,14 @@ func TestReflection(t *testing.T) {
 			},
 			[]string{"Santos", "São Vicente"},
 		},
+		{
+			"Arrays",
+			[2]Perfil{
+				{20, "Santos"},
+				{19, "São Vicente"},
+			},
+			[]string{"Santos", "São Vicente"},
+		},
 	}
 
 	for _, test := range cases {
@@ -98,20 +106,13 @@ func through(x interface{}, fn func(input string)) {
 	quantityOfValue := 0
 	var getField func(int) reflect.Value
 
-	if value.Kind() == reflect.Slice {
-		for i := 0; i < value.Len(); i++ {
-			through(value.Index(i).Interface(), fn)
-		}
-		return
-	}
-
 	switch value.Kind() {
 	case reflect.String:
 		fn(value.String())
 	case reflect.Struct:
 		quantityOfValue = value.NumField()
 		getField = value.Field
-	case reflect.Slice:
+	case reflect.Slice, reflect.Array:
 		quantityOfValue = value.Len()
 		getField = value.Index
 	}
