@@ -55,6 +55,17 @@ func TestReflection(t *testing.T) {
 			},
 			[]string{"Luiz", "Santos"},
 		},
+		{
+			"Struct com um campo string e uma struct",
+			&Person{
+				"Luiz",
+				Perfil{
+					Idade:  20,
+					Cidade: "Santos",
+				},
+			},
+			[]string{"Luiz", "Santos"},
+		},
 	}
 
 	for _, test := range cases {
@@ -75,6 +86,11 @@ func TestReflection(t *testing.T) {
 
 func through(x interface{}, fn func(input string)) {
 	value := reflect.ValueOf(x)
+
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+
 	for i := 0; i < value.NumField(); i++ {
 		field := value.Field(i)
 
