@@ -22,47 +22,33 @@ func TestReflection(t *testing.T) {
 		CallsWaiting []string
 	}{
 		{
-			"Struct com um campo string",
+			"Struct com um campo tipo string",
 			struct {
 				Nome string
-			}{"Chris"},
-			[]string{"Chris"},
+			}{"Luiz"},
+			[]string{"Luiz"},
 		},
 		{
-			"Struct com dois campos string",
+			"Struct com dois campos tipo string",
 			struct {
 				Nome   string
 				Cidade string
-			}{"Chris", "Londres"},
-			[]string{"Chris", "Londres"},
+			}{"Luiz", "Santos"},
+			[]string{"Luiz", "Santos"},
 		},
 		{
-			"Struct com um campo string e int",
-			struct {
-				Nome  string
-				Idade int
-			}{"Chris", 22},
-			[]string{"Chris"},
-		},
-		{
-			"Struct com um campo string e uma struct",
+			"Campos aninhados",
 			Person{
 				"Luiz",
-				Perfil{
-					Idade:  20,
-					Cidade: "Santos",
-				},
+				Perfil{20, "Santos"},
 			},
 			[]string{"Luiz", "Santos"},
 		},
 		{
-			"Struct com um pointer",
+			"Ponteiros para coisas",
 			&Person{
 				"Luiz",
-				Perfil{
-					Idade:  20,
-					Cidade: "Santos",
-				},
+				Perfil{20, "Santos"},
 			},
 			[]string{"Luiz", "Santos"},
 		},
@@ -70,7 +56,7 @@ func TestReflection(t *testing.T) {
 			"Slices",
 			[]Perfil{
 				{20, "Santos"},
-				{19, "São Vicente"},
+				{34, "São Vicente"},
 			},
 			[]string{"Santos", "São Vicente"},
 		},
@@ -78,17 +64,9 @@ func TestReflection(t *testing.T) {
 			"Arrays",
 			[2]Perfil{
 				{20, "Santos"},
-				{19, "São Vicente"},
+				{34, "São Vicente"},
 			},
 			[]string{"Santos", "São Vicente"},
-		},
-		{
-			"Maps",
-			map[string]string{
-				"Foo": "Bar",
-				"Baz": "Boz",
-			},
-			[]string{"Bar", "Boz"},
 		},
 	}
 
@@ -106,40 +84,32 @@ func TestReflection(t *testing.T) {
 		})
 	}
 
-}
-
-func through(x interface{}, fn func(input string)) {
-	value := getValue(x)
-
-	throughValue := func(value reflect.Value) {
-		through(value.Interface(), fn)
-	}
-
-	switch value.Kind() {
-	case reflect.String:
-		fn(value.String())
-	case reflect.Struct:
-		for i := 0; i < value.NumField(); i++ {
-			through(value.Interface(), fn)
+	t.Run("With Maps", func(t *testing.T) {
+		mapA := map[string]string{
+			"Foo": "Bar",
+			"Baz": "Boz",
 		}
-	case reflect.Slice, reflect.Array:
-		for i := 0; i < value.Len(); i++ {
-			throughValue(value.Field(i))
-		}
-	case reflect.Map:
-		for _, key := range value.MapKeys() {
-			throughValue(value.MapIndex(key))
-		}
-	}
+
+		var result []string
+		through(mapA, func(input string) {
+			result = append(result, input)
+		})
+
+		checkIfHave(t, result, "Bar")
+		checkIfHave(t, result, "Boz")
+	})
 
 }
 
-func getValue(x interface{}) reflect.Value {
-	value := reflect.ValueOf(x)
-
-	if value.Kind() == reflect.Ptr {
-		value = value.Elem()
+func checkIfHave(t *testing.T, array []string, value string) {
+	have := false
+	for _, x := range array {
+		if x == value {
+			have = true
+		}
 	}
 
-	return value
+	if !have {
+		t.Errorf("Expect have %s in %+v, but dont have", value, array)
+	}
 }
