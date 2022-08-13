@@ -56,7 +56,7 @@ func TestReflection(t *testing.T) {
 			[]string{"Luiz", "Santos"},
 		},
 		{
-			"Struct com um campo string e uma struct",
+			"Struct com um pointer",
 			&Person{
 				"Luiz",
 				Perfil{
@@ -65,6 +65,14 @@ func TestReflection(t *testing.T) {
 				},
 			},
 			[]string{"Luiz", "Santos"},
+		},
+		{
+			"Slices",
+			[]Perfil{
+				{20, "Santos"},
+				{19, "São Vicente"},
+			},
+			[]string{"Santos", "São Vicente"},
 		},
 	}
 
@@ -86,6 +94,13 @@ func TestReflection(t *testing.T) {
 
 func through(x interface{}, fn func(input string)) {
 	value := getValue(x)
+
+	if value.Kind() == reflect.Slice {
+		for i := 0; i < value.Len(); i++ {
+			through(value.Index(i).Interface(), fn)
+		}
+		return
+	}
 
 	for i := 0; i < value.NumField(); i++ {
 		field := value.Field(i)
