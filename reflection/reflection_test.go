@@ -95,6 +95,9 @@ func TestReflection(t *testing.T) {
 func through(x interface{}, fn func(input string)) {
 	value := getValue(x)
 
+	quantityOfValue := 0
+	var getField func(int) reflect.Value
+
 	if value.Kind() == reflect.Slice {
 		for i := 0; i < value.Len(); i++ {
 			through(value.Index(i).Interface(), fn)
@@ -102,16 +105,21 @@ func through(x interface{}, fn func(input string)) {
 		return
 	}
 
-	for i := 0; i < value.NumField(); i++ {
-		field := value.Field(i)
-
-		switch field.Kind() {
-		case reflect.String:
-			fn(field.String())
-		case reflect.Struct:
-			through(field.Interface(), fn)
-		}
+	switch value.Kind() {
+	case reflect.String:
+		fn(value.String())
+	case reflect.Struct:
+		quantityOfValue = value.NumField()
+		getField = value.Field
+	case reflect.Slice:
+		quantityOfValue = value.Len()
+		getField = value.Index
 	}
+
+	for i := 0; i < quantityOfValue; i++ {
+		through(getField(i).Interface(), fn)
+	}
+
 }
 
 func getValue(x interface{}) reflect.Value {
