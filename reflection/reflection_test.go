@@ -5,6 +5,16 @@ import (
 	"testing"
 )
 
+type Person struct {
+	Nome   string
+	Perfil Perfil
+}
+
+type Perfil struct {
+	Idade  int
+	Cidade string
+}
+
 func TestReflection(t *testing.T) {
 	cases := []struct {
 		Nome         string
@@ -34,6 +44,17 @@ func TestReflection(t *testing.T) {
 			}{"Chris", 22},
 			[]string{"Chris"},
 		},
+		{
+			"Struct com um campo string e uma struct",
+			Person{
+				"Luiz",
+				Perfil{
+					Idade:  20,
+					Cidade: "Santos",
+				},
+			},
+			[]string{"Luiz", "Santos"},
+		},
 	}
 
 	for _, test := range cases {
@@ -59,6 +80,10 @@ func through(x interface{}, fn func(input string)) {
 
 		if field.Kind() == reflect.String {
 			fn(field.String())
+		}
+
+		if field.Kind() == reflect.Struct {
+			through(field.Interface(), fn)
 		}
 	}
 }
