@@ -12,12 +12,12 @@ func TestSync(t *testing.T) {
 		counter.Increment()
 		counter.Increment()
 
-		verifyCounter(t, counter, 3)
+		verifyCounter(t, &counter, 3)
 	})
 
 	t.Run("should run concurrent in safety", func(t *testing.T) {
 		counterExpect := 1000
-		counter := Counter{}
+		counter := NewCounter()
 
 		var wg sync.WaitGroup
 		wg.Add(counterExpect)
@@ -34,9 +34,13 @@ func TestSync(t *testing.T) {
 	})
 }
 
-func verifyCounter(t *testing.T, counter Counter, times int) {
+func verifyCounter(t *testing.T, counter *Counter, times int) {
 	t.Helper()
 	if counter.Value() != times {
 		t.Errorf("Counter\ngot: %d\nexpect: %d", counter.Value(), times)
 	}
+}
+
+func NewCounter() *Counter {
+	return &Counter{}
 }
