@@ -8,13 +8,10 @@ import (
 	"time"
 )
 
-type StubStore struct {
-	response string
-}
-
 type SpyStore struct {
 	response  string
 	cancelled bool
+	t         *testing.T
 }
 
 func (s *SpyStore) Fetch() string {
@@ -26,43 +23,47 @@ func (s *SpyStore) Cancel() {
 	s.cancelled = true
 }
 
+func (s *SpyStore) assertWasCancelled() {
+	s.t.Helper()
+	if !s.cancelled {
+		s.t.Errorf("Stora was not warn to cancel")
+	}
+}
+
+func (s *SpyStore) assertWasNotCancelled() {
+	s.t.Helper()
+	if s.cancelled {
+		s.t.Errorf("Stora was warn to cancel")
+	}
+}
+
 func TestHandler(t *testing.T) {
+	data := "hello, world"
+
 	t.Run("Return data", func(t *testing.T) {
-		data := "hello, world"
-		store := &SpyStore{response: data}
+		store := &SpyStore{response: data, t: t}
 		svr := Server(store)
 
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
-
-		cancellingCtx, cancel := context.WithCancel(request.Context())
-		time.AfterFunc(5*time.Millisecond, cancel)
-		request = request.WithContext(cancellingCtx)
-
 		response := httptest.NewRecorder()
 
 		svr.ServeHTTP(response, request)
 
-		if !store.cancelled {
-			t.Errorf("Context\nStore was not warn to cancel")
-		}
+		store.assertWasNotCancelled()
 	})
 
 	t.Run("Return data from store", func(t *testing.T) {
-		data := "hello, world"
-		store := &SpyStore{response: data}
+		store := &SpyStore{response: data, t: t}
 		svr := Server(store)
 
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
+		cancellingCtx, cancel := context.WithCancel(request.Context())
+		time.AfterFunc(5*time.Millisecond, cancel)
+		request = request.WithContext(cancellingCtx)
 		response := httptest.NewRecorder()
 
 		svr.ServeHTTP(response, request)
 
-		if response.Body.String() != data {
-			t.Errorf("Context\ngot: '%s'\nexpect: '%s'", response.Body.String(), data)
-		}
-
-		if !store.cancelled {
-			t.Errorf("Context\nShould not cancel from store")
-		}
+		store.assertWasCancelled()
 	})
 }
