@@ -9,8 +9,12 @@ func TestSync(t *testing.T) {
 		counter.Increment()
 		counter.Increment()
 
-		if counter.Value() != 3 {
-			t.Errorf("Counter\ngot: %d\nexpect: %d", counter.Value(), 3)
-		}
+		verifyCounter(t, counter, 3)
 	})
+}
+
+func verifyCounter(t *testing.T, counter Counter, times int) {
+	if counter.Value() != times {
+		t.Errorf("Counter\ngot: %d\nexpect: %d", counter.Value(), 3)
+	}
 }
